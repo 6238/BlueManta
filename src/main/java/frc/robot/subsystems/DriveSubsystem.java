@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -8,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class DriveSubsystem implements Subsystem{
@@ -36,7 +39,7 @@ public class DriveSubsystem implements Subsystem{
         m_leftMotorLeader.setNeutralMode(NeutralMode.Brake);
         m_rightMotorFollower.setNeutralMode(NeutralMode.Brake);
         m_leftMotorFollower.setNeutralMode(NeutralMode.Brake);
-        
+
         m_rightMotorLeader.setInverted(true);
         m_leftMotorFollower.setInverted(InvertType.FollowMaster);
         m_rightMotorFollower.setInverted(InvertType.FollowMaster);
@@ -51,29 +54,42 @@ public class DriveSubsystem implements Subsystem{
         m_leftMotorLeader.config_kP(0, 1.0);
         m_leftMotorLeader.config_kI(0, 0.000001);
 
-        shiftGearLowSpeed();
+        this.shiftLowCommand().execute();
 
         m_robotDrive = new DifferentialDrive(m_leftMotorLeader, m_rightMotorLeader);
-    }   
-    public void shiftGearHighSpeed() {
+    }
+
+    public Command shiftHighCommand() {
+      return runOnce(() -> {
         m_isGearedFast = true;
         m_solnoidLeft.set(DoubleSolenoid.Value.kReverse);
         m_solnoidRight.set(DoubleSolenoid.Value.kReverse);
-    }
-    public void shiftGearLowSpeed() {
-        m_isGearedFast = false;
-        m_solnoidLeft.set(DoubleSolenoid.Value.kForward);
-        m_solnoidRight.set(DoubleSolenoid.Value.kForward);   
+      });
     }
 
-    public void driveArcade(double forward, double turn) {
-        m_robotDrive.arcadeDrive(forward, turn);
+    public Command shiftLowCommand() {
+      return runOnce(() -> {
+        m_isGearedFast = false;
+        m_solnoidLeft.set(DoubleSolenoid.Value.kForward);
+        m_solnoidRight.set(DoubleSolenoid.Value.kForward);
+      });
     }
+
+    public Command driveArcadeCommand(DoubleSupplier forward, DoubleSupplier turn) {
+      return run(() -> m_robotDrive.arcadeDrive(forward.getAsDouble(), turn.getAsDouble()))
+      .withName("arcadeDrive");
+    }
+
+    public Command driveTankCommand(DoubleSupplier left, DoubleSupplier right) {
+      return run(() -> m_robotDrive.tankDrive(left.getAsDouble(), right.getAsDouble()))
+      .withName("tankDrive");
+    }
+
 
     public void driveTank(double left, double right) {
         m_robotDrive.tankDrive(left, right);
     }
-    
+
     @Override
     public void periodic() {
     }
