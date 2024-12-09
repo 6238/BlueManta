@@ -14,12 +14,12 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
 
   public RobotContainer() {
-    driveSubsystem.setDefaultCommand(driveSubsystem.driveArcadeCommand(driverXbox::getLeftX, () -> {return driverXbox.getLeftY() * -1.0;}));
+    driveSubsystem.setDefaultCommand(driveSubsystem.driveArcadeCommand(driverXbox::getLeftX, () -> {
+      return driverXbox.getLeftY() * -1.0;
+    }));
     driverXbox.leftBumper().onTrue(driveSubsystem.shiftHighCommand());
     driverXbox.rightBumper().onTrue(driveSubsystem.shiftLowCommand());
-
   }
-
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
