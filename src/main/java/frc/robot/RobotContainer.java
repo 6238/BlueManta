@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class RobotContainer {
   private final CommandXboxController driverXbox = new CommandXboxController(0);
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  private final LEDSubsystem led = new LEDSubsystem();
 
   public RobotContainer() {
     driveSubsystem.setDefaultCommand(
@@ -25,9 +27,9 @@ public class RobotContainer {
     );
     driverXbox.leftBumper().onTrue(new InstantCommand(() -> driveSubsystem.shiftGearHighSpeed()));
     driverXbox.rightBumper().onTrue(new InstantCommand(() -> driveSubsystem.shiftGearLowSpeed()));
-  
+
   }
-  
+
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
