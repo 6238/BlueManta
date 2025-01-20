@@ -5,18 +5,22 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 
 public class RobotContainer {
-  private final CommandXboxController driverXbox = new CommandXboxController(0);
+  private final XboxController driverXbox = new XboxController(0);
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  private final LEDSubsystem led = new LEDSubsystem();
+  private ElevatorSubsystem m_elevator = new ElevatorSubsystem();
+
 
   public RobotContainer() {
     driveSubsystem.setDefaultCommand(
@@ -25,8 +29,20 @@ public class RobotContainer {
         driveSubsystem
       )
     );
-    driverXbox.leftBumper().onTrue(new InstantCommand(() -> driveSubsystem.shiftGearHighSpeed()));
-    driverXbox.rightBumper().onTrue(new InstantCommand(() -> driveSubsystem.shiftGearLowSpeed()));
+    // driverXbox.leftBumper().onTrue(new InstantCommand(() -> driveSubsystem.shiftGearHighSpeed()));
+    // driverXbox.rightBumper().onTrue(new InstantCommand(() -> driveSubsystem.shiftGearLowSpeed()));
+
+     new JoystickButton(driverXbox, Button.kA.value)
+        .onTrue(m_elevator.setHeightCommand(Constants.Elevator.ElevatorHeights.L1));
+
+    new JoystickButton(driverXbox, Button.kB.value)
+        .onTrue(m_elevator.setHeightCommand(Constants.Elevator.ElevatorHeights.L2));
+
+    new JoystickButton(driverXbox, Button.kX.value)
+        .onTrue(m_elevator.setHeightCommand(Constants.Elevator.ElevatorHeights.L3));
+
+    new JoystickButton(driverXbox, Button.kY.value)
+        .onTrue(m_elevator.setHeightCommand(Constants.Elevator.ElevatorHeights.L4));
 
   }
 
